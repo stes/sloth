@@ -8,6 +8,20 @@ import logging
 import functools
 LOG = logging.getLogger(__name__)
 
+# this is a hack
+from PyQt4.Qt import *
+
+name2color = {
+    "tumor"             : QColor(0,0,255),
+    "necrosis"          : QColor(0,255,0),
+    "stroma"            : QColor(255,0,0),
+    "muscle"            : QColor(128,128,0),
+    "vacuola"           : QColor(0,128,128),
+    "connective_tissue" : QColor(128,0,128),
+    "bloodvessel"       : QColor(128,0,0),
+    "artefact"          : QColor(0,0,0),
+}
+
 
 class AnnotationScene(QGraphicsScene):
     mousePositionChanged = pyqtSignal(float, float)
@@ -108,7 +122,7 @@ class AnnotationScene(QGraphicsScene):
             except KeyError:
                 LOG.debug('Could not find key class in annotation item. Skipping this item. Please check your label file.')
                 continue
-            item = self._itemfactory.create(label_class, child)
+            item = self._itemfactory.create(label_class, child, color=name2color.get(label_class, Qt.yellow))
             if item is not None:
                 self.addItem(item)
             else:
@@ -410,7 +424,7 @@ class AnnotationScene(QGraphicsScene):
 
             self._message_text_item.paint(painter, QStyleOptionGraphicsItem(), None)
 
-    # 
+    #
     # utility functions
     #
 
@@ -491,4 +505,3 @@ class AnnotationScene(QGraphicsScene):
 
         functools.update_wrapper(paint, oldpaint)
         RectItem.paint = paint
-

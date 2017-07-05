@@ -71,7 +71,7 @@ class BaseItem(QAbstractGraphicsShapeItem):
     hotkeys = {}
     defaultAutoTextKeys = []
 
-    def __init__(self, model_item=None, prefix="", parent=None):
+    def __init__(self, model_item=None, prefix="", parent=None, color=Qt.yellow):
         """
         Creates a visualization item.
         """
@@ -96,6 +96,7 @@ class BaseItem(QAbstractGraphicsShapeItem):
         self._text_item.setFlags(QGraphicsItem.ItemIgnoresTransformations)
         self._text_item.setHtml(self._compile_text())
         self._valid = True
+        self._color = color
 
         if len(self.cycleValuesOnKeypress) > 0:
             logging.warning("cycleValueOnKeypress is deprecated and will be removed in the future. " +
@@ -109,7 +110,7 @@ class BaseItem(QAbstractGraphicsShapeItem):
             if c is not None:
                 self.setColor(c)
                 return
-        self.setColor(Qt.yellow)
+        self.setColor(self._color)
 
     def onDataChanged(self, indexFrom, indexTo):
         # FIXME why is this not updated, when changed graphically via attribute box ?
@@ -267,8 +268,8 @@ class PointItem(BaseItem):
     Visualization item for points.
     """
 
-    def __init__(self, model_item=None, prefix="", parent=None):
-        BaseItem.__init__(self, model_item, prefix, parent)
+    def __init__(self, model_item=None, prefix="", parent=None, *args, **kwargs):
+        BaseItem.__init__(self, model_item, prefix, parent, *args, **kwargs)
 
         self._radius = 2
         self._point = None
@@ -348,8 +349,8 @@ class PointItem(BaseItem):
 
 
 class RectItem(BaseItem):
-    def __init__(self, model_item=None, prefix="", parent=None):
-        BaseItem.__init__(self, model_item, prefix, parent)
+    def __init__(self, model_item=None, prefix="", parent=None, *args, **kwargs):
+        BaseItem.__init__(self, model_item, prefix, parent, *args, **kwargs)
 
         self._rect = None
         self._resize = False
@@ -481,8 +482,8 @@ class RectItem(BaseItem):
 
 
 class MultiPointItem(BaseItem):
-    def __init__(self, model_item=None, prefix="pointlist", parent=None):
-        BaseItem.__init__(self, model_item, prefix, parent)
+    def __init__(self, model_item=None, prefix="pointlist", parent=None, *args, **kwargs):
+        BaseItem.__init__(self, model_item, prefix, parent, *args, **kwargs)
 
         # make it non-movable for now
         self.setFlags(QGraphicsItem.ItemIsSelectable |
@@ -546,9 +547,9 @@ class MultiPointItem(BaseItem):
 class GroupItem(BaseItem):
     items = []
 
-    def __init__(self, model_item=None, prefix="", parent=None):
+    def __init__(self, model_item=None, prefix="", parent=None, *args, **kwargs):
         self._children = []
-        BaseItem.__init__(self, model_item, prefix, parent)
+        BaseItem.__init__(self, model_item, prefix, parent, *args, **kwargs)
         self.setFlag(QGraphicsItem.ItemIsMovable, False)
 
         self.createChildren()
@@ -611,7 +612,7 @@ class BBoxFaceItem(GroupItem):
 
 
 class ControlItem(QGraphicsItem):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, *args, **kwargs):
         QGraphicsItem.__init__(self, parent)
 
         # always have the same size
@@ -759,8 +760,8 @@ class NPointFaceItem(GroupItem):
         painter.drawRect(self.boundingRect())
 
 class PolygonItem(BaseItem):
-    def __init__(self, model_item=None, prefix="", parent=None):
-        BaseItem.__init__(self, model_item, prefix, parent)
+    def __init__(self, model_item=None, prefix="", parent=None, *args, **kwargs):
+        BaseItem.__init__(self, model_item, prefix, parent, *args, **kwargs)
 
         # Make it non-movable for now
         self.setFlags(QGraphicsItem.ItemIsSelectable |
